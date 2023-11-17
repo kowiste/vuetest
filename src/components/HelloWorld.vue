@@ -1,13 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-
-defineProps({
-  msg: String,
-})
-
-const count = ref(0)
-</script>
-
 <template>
   <h1>{{ msg }}</h1>
 
@@ -21,17 +11,48 @@ const count = ref(0)
 
   <p>
     Check out
-    <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank"
-      >create-vue</a
-    >, the official Vue + Vite starter
+<p>{{resultOther}}</p>
   </p>
   <p>
-    Install
-    <a href="https://github.com/vuejs/language-tools" target="_blank">Volar</a>
-    in your IDE for a better DX
+    cat FACT
+    <p>{{resultCat}}</p>
+   
   </p>
-  <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
+  <input type="text" v-model="texto" />
+  <button @click="test">PULSAME</button>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import axios from 'axios'
+
+defineProps({
+  msg: String,
+})
+let texto = ref('')
+let resultCat = ref('')
+let resultOther = ref('')
+const count = ref(0)
+function test() {
+  console.log(texto)
+    axios
+    .get(texto.value)
+    .then((result) => {
+      resultOther.value = result.data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  axios
+    .get('https://catfact.ninja/fact')
+    .then((result) => {
+      resultCat.value = result.data.fact
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+</script>
 
 <style scoped>
 .read-the-docs {
