@@ -1,61 +1,41 @@
-<template>
-  <h1>{{ msg }}</h1>
-
-  <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
-    <p>
-      Edit
-      <code>components/HelloWorld.vue</code> to test HMR
-    </p>
-  </div>
-
-  <p>
-    Check out
-<p>{{resultOther}}</p>
-  </p>
-  <p>
-    cat FACT
-    <p>{{resultCat}}</p>
-   
-  </p>
-  <input type="text" v-model="texto" />
-  <button @click="test">PULSAME</button>
-</template>
-
-<script setup>
-import { ref } from 'vue'
-import axios from 'axios'
-
-defineProps({
-  msg: String,
-})
-let texto = ref('')
-let resultCat = ref('')
-let resultOther = ref('')
-const count = ref(0)
-function test() {
-  console.log(texto)
-    axios
-    .get(texto.value)
-    .then((result) => {
-      resultOther.value = result.data
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  axios
-    .get('https://catfact.ninja/fact')
-    .then((result) => {
-      resultCat.value = result.data.fact
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
+<script setup lang="ts">
+defineProps<{
+  msg: string
+}>()
 </script>
 
+<template>
+  <div class="greetings">
+    <h1 class="green">{{ msg }}</h1>
+    <h3>
+      You’ve successfully created a project with
+      <a href="https://vitejs.dev/" target="_blank" rel="noopener">Vite</a> +
+      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>. What's next?
+    </h3>
+  </div>
+</template>
+
 <style scoped>
-.read-the-docs {
-  color: #888;
+h1 {
+  font-weight: 500;
+  font-size: 2.6rem;
+  position: relative;
+  top: -10px;
+}
+
+h3 {
+  font-size: 1.2rem;
+}
+
+.greetings h1,
+.greetings h3 {
+  text-align: center;
+}
+
+@media (min-width: 1024px) {
+  .greetings h1,
+  .greetings h3 {
+    text-align: left;
+  }
 }
 </style>
