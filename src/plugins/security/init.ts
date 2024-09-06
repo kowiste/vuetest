@@ -2,10 +2,10 @@ import { createPinia, type Pinia } from 'pinia'
 import { type App, type Plugin } from 'vue'
 import { useKeycloakStore } from './store'
 import Keycloak from 'keycloak-js'
-import { env } from '@/utils/const'
+import {type ISecurityOption} from './model'
 
 export const KeycloakPlugin: Plugin = {
-  install(app: App, options: any) {
+  install(app: App, options: ISecurityOption) {
     let pinia: Pinia | null = app.config.globalProperties.$pinia
     if (!pinia) {
       pinia = createPinia()
@@ -13,7 +13,7 @@ export const KeycloakPlugin: Plugin = {
     }
 
     const kc = useKeycloakStore()
-    const keycloak = new Keycloak(options)
+    const keycloak = new Keycloak('')
     keycloak
       .init({
         checkLoginIframe: false,

@@ -7,27 +7,47 @@
       width="125"
       height="125"
     />
-
-    <div class="wrapper">
-
-    </div>
+    {{ url }}
+    <div class="wrapper"></div>
   </header>
-
- 
 </template>
 <script setup lang="ts">
- import {useWebsocketStore} from '@/plugins/websocket/store'
- const storeWS= useWebsocketStore()
+import { onMounted, computed, watch } from 'vue'
+import { useWebsocketStore } from '@/plugins/websocket/store'
+import { useWSTest } from '@/stores/counter'
 
- storeWS.connect('google.com',
-(message:any)=>{
+const storeWS = useWebsocketStore()
+const wsTest = useWSTest()
 
-},
-(error:any)=>{
-
+const url = computed(() => {
+  return wsTest.URL
+})
+function setQuery(url: string, token: string): string {
+  const param = new URLSearchParams()
+  param.append('token', token)
+  return `${url}?${param.toString()}`
 }
+onMounted(() => {
+  wsTest.getURL()
+})
+watch(
+  () => url.value,
+  () => {
+    if (url.value != '') {
+      console.log('connect ws')
 
- )
+      storeWS.connect(
+        setQuery(url.value, wsTest.token),
+        (message: any) => {
+          console.log('message', message)
+        },
+        (error: any) => {
+          console.log('error', error)
+        }
+      )
+    }
+  }
+)
 </script>
 <style scoped>
 header {

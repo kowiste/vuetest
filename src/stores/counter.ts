@@ -1,12 +1,34 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useCounterStore = defineStore('counter', () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() {
-    count.value++
-  }
+import axios from 'axios'
 
-  return { count, doubleCount, increment }
+interface State {
+  URL: string
+  token: string
+}
+export const useWSTest = defineStore('testStore', {
+  state: (): State => ({
+    URL: '',
+    token: '',
+  }),
+  getters: {
+    url(): string {
+      return this.URL
+    },
+  },
+  actions: {
+    getURL() {
+      axios
+        .post('http://localhost:8080/ws/token')
+        .then((resp) => {
+          console.log('resp', resp.data)
+          this.URL = 'http://localhost:8080/ws/' + resp.data.clientID
+          this.token = resp.data.token
+        })
+        .catch((error) => {
+          console.log('error', error)
+        })
+    },
+  },
 })
