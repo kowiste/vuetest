@@ -8,9 +8,11 @@ import router from './router'
 import { WebsocketPlugin } from '@/plugins/websocket/init'
 import type { IWebsocketOption } from './plugins/websocket/model'
 const app = createApp(App)
+
 const wsOptions = {
-  log: true ,
+  log: true,
 } as IWebsocketOption
-app.use(createPinia()).use(router).use(WebsocketPlugin)
+
+app.use(createPinia()).use(router).use(WebsocketPlugin, wsOptions)
 
 app.mount('#app')

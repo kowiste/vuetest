@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -17,8 +18,6 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-var clients = make(map[string]*websocket.Conn)
-var clientsMutex = &sync.Mutex{}
 var jwtKey = []byte("your_secret_key")
 
 type Claims struct {
@@ -26,11 +25,23 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func Connect(c *gin.Context) {
+type WebSocketServer struct {
+	clients      map[string]*websocket.Conn
+	clientsMutex *sync.Mutex
+}
+
+func NewWebSocketServer() *WebSocketServer {
+	return &WebSocketServer{
+		clients:      make(map[string]*websocket.Conn),
+		clientsMutex: &sync.Mutex{},
+	}
+}
+
+func (ws *WebSocketServer) Connect(c *gin.Context) {
 	token := c.Query("token")
 	clientID := c.Param("clientID")
 
-	if !validateToken(token,clientID) {
+	if !validateToken(token, clientID) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return
 	}
@@ -41,14 +52,14 @@ func Connect(c *gin.Context) {
 		return
 	}
 
-	clientsMutex.Lock()
-	clients[clientID] = conn
-	clientsMutex.Unlock()
+	ws.clientsMutex.Lock()
+	ws.clients[clientID] = conn
+	ws.clientsMutex.Unlock()
 
 	defer func() {
-		clientsMutex.Lock()
-		delete(clients, clientID)
-		clientsMutex.Unlock()
+		ws.clientsMutex.Lock()
+		delete(ws.clients, clientID)
+		ws.clientsMutex.Unlock()
 		conn.Close()
 	}()
 
@@ -62,7 +73,7 @@ func Connect(c *gin.Context) {
 	}
 }
 
-func GetToken(c *gin.Context) {
+func (ws *WebSocketServer) GetToken(c *gin.Context) {
 	clientID := uuid.NewString()
 	expirationTime := time.Now().Add(5 * time.Minute)
 	claims := &Claims{
@@ -81,6 +92,19 @@ func GetToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"clientID": clientID, "token": tokenString})
 }
+
+func (ws *WebSocketServer) SendMessage(clientID string, message []byte) error {
+	ws.clientsMutex.Lock()
+	conn, ok := ws.clients[clientID]
+	ws.clientsMutex.Unlock()
+
+	if !ok {
+		return fmt.Errorf("client not connected")
+	}
+
+	return conn.WriteMessage(websocket.TextMessage, message)
+}
+
 func validateToken(tokenString, clientID string) bool {
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {

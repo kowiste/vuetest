@@ -18,11 +18,11 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-
+	wss := ws.NewWebSocketServer()
 	wsGroup := r.Group("ws")
 	{
-		wsGroup.POST("token", ws.GetToken)
-		wsGroup.GET(":clientID", ws.Connect)
+		wsGroup.POST("token", wss.GetToken)
+		wsGroup.GET(":clientID", wss.Connect)
 	}
 
 	r.Run(":8080")
