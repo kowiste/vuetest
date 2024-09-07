@@ -63,5 +63,8 @@ export const useWebsocketStore = defineStore('websocket', {
       if (!this.Websocket) return ''
       return this.Websocket.url
     },
+    status():EConnectionStatus{
+      return this.Status
+    }
   },
 })

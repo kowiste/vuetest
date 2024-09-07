@@ -1,12 +1,14 @@
 <template>
   <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
+    <div class="container">
+      <div
+        class="status"
+        :class="status == EConnectionStatus.Open ? 'open' : 'close'"
+      >
+        {{ status }}
+      </div>
+    </div>
+
     {{ url }}
     <div class="wrapper"></div>
   </header>
@@ -15,12 +17,16 @@
 import { onMounted, computed, watch } from 'vue'
 import { useWebsocketStore } from '@/plugins/websocket/store'
 import { useWSTest } from '@/stores/counter'
+import { EConnectionStatus } from '@/plugins/websocket/model'
 
 const storeWS = useWebsocketStore()
 const wsTest = useWSTest()
 let wsReconnect: number
 const url = computed(() => {
   return wsTest.URL
+})
+const status = computed(() => {
+  return storeWS.status
 })
 storeWS.onConnect((data: any) => {
   console.log('connected')
@@ -57,65 +63,18 @@ watch(
 )
 </script>
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.status {
+  padding: 0.2rem;
+  padding-inline: 1rem;
+  border-radius: 0.5rem;
 }
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.close {
+  background-color: rgb(184, 94, 94);
 }
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+.open {
+  background-color: rgb(36, 133, 31);
 }
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.container{
+  display: flex;
 }
 </style>
