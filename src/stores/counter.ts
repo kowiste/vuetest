@@ -22,7 +22,6 @@ export const useWSTest = defineStore('testStore', {
       axios
         .post('http://localhost:8080/ws/token')
         .then((resp) => {
-          console.log('resp', resp.data)
           this.URL = 'http://localhost:8080/ws/' + resp.data.clientID
           this.token = resp.data.token
         })

@@ -18,33 +18,40 @@ import { useWSTest } from '@/stores/counter'
 
 const storeWS = useWebsocketStore()
 const wsTest = useWSTest()
-
+let wsReconnect: number
 const url = computed(() => {
   return wsTest.URL
+})
+storeWS.onConnect((data: any) => {
+  console.log('connected')
+  clearInterval(wsReconnect)
+})
+storeWS.onClose((event: any) => {
+  console.log('websocket closed', event)
+  wsReconnect = setInterval(getURL, 10000)
+})
+storeWS.onError((data: any) => {
+  console.log('error', data)
 })
 function setQuery(url: string, token: string): string {
   const param = new URLSearchParams()
   param.append('token', token)
   return `${url}?${param.toString()}`
 }
-onMounted(() => {
+function getURL() {
+  console.log('getting url')
   wsTest.getURL()
+}
+onMounted(() => {
+  getURL()
 })
 watch(
   () => url.value,
   () => {
     if (url.value != '') {
-      console.log('connect ws')
-
-      storeWS.connect(
-        setQuery(url.value, wsTest.token),
-        (message: any) => {
-          console.log('message', message)
-        },
-        (error: any) => {
-          console.log('error', error)
-        }
-      )
+      storeWS.connect(setQuery(url.value, wsTest.token), (message: any) => {
+        console.log('message', message)
+      })
     }
   }
 )

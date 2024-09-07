@@ -4,6 +4,9 @@ interface State {
   Websocket: WebSocket | undefined
   Status: EConnectionStatus
   Options?: IWebsocketOption
+  onConnect?: (data: any) => void
+  onClose?: (data: any) => void
+  onError?: (err: any) => void
 }
 
 export const useWebsocketStore = defineStore('websocket', {
@@ -12,12 +15,13 @@ export const useWebsocketStore = defineStore('websocket', {
     Status: EConnectionStatus.Close,
   }),
   actions: {
-    connect(url: string, onMessage: Function, onError: Function) {
+    connect(url: string, onMessage: Function) {
       if (this.Websocket?.OPEN) this.Websocket?.close()
       this.Websocket = new WebSocket(url, this.Options?.protocols)
       this.Websocket.onopen = (data: any) => {
         if (this.Options?.log) console.log('websocket open', data)
         this.Status = EConnectionStatus.Open
+        if (this.onConnect) this.onConnect(data)
       }
       this.Websocket.onmessage = (event: any) => {
         if (this.Options?.log) console.log('Message from server:', event)
@@ -27,10 +31,11 @@ export const useWebsocketStore = defineStore('websocket', {
       this.Websocket.onclose = (event) => {
         if (this.Options?.log) console.log('WebSocket is closed now.')
         this.Status = EConnectionStatus.Close
+        if(this.onClose) this.onClose(event)
       }
       this.Websocket.onerror = (error) => {
         if (this.Options?.log) console.error('WebSocket error:', error)
-        onError(error)
+        if (this.onError) this.onError(error)
       }
     },
     send(data: any) {
@@ -39,6 +44,15 @@ export const useWebsocketStore = defineStore('websocket', {
     disconnect() {
       if (this.Websocket?.OPEN) this.Websocket?.close()
       this.Status = EConnectionStatus.Close
+    },
+    onConnect(connectFunc: (data: any) => void) {
+      this.onConnect = connectFunc
+    },
+    onClose(closeFunc: (data: any) => void) {
+      this.onClose = closeFunc
+    },
+    onError(errorFunc: (error: any) => void) {
+      this.onError = errorFunc
     },
     setOptions(data: IWebsocketOption) {
       this.Options = data
