@@ -19,15 +19,11 @@ import { useWebsocketStore } from '@/plugins/websocket/store'
 import { useWSTest } from '@/stores/counter'
 import { EConnectionStatus } from '@/plugins/websocket/model'
 
+let wsReconnect: number
+//store
 const storeWS = useWebsocketStore()
 const wsTest = useWSTest()
-let wsReconnect: number
-const url = computed(() => {
-  return wsTest.URL
-})
-const status = computed(() => {
-  return storeWS.status
-})
+
 storeWS.onConnect((data: any) => {
   console.log('connected')
   clearInterval(wsReconnect)
@@ -39,6 +35,15 @@ storeWS.onClose((event: any) => {
 storeWS.onError((data: any) => {
   console.log('error', data)
 })
+
+//computed
+const url = computed(() => {
+  return wsTest.URL
+})
+const status = computed(() => {
+  return storeWS.status
+})
+
 function setQuery(url: string, token: string): string {
   const param = new URLSearchParams()
   param.append('token', token)
@@ -55,7 +60,8 @@ watch(
   () => url.value,
   () => {
     if (url.value != '') {
-      storeWS.connect(setQuery(url.value, wsTest.token), (message: any) => {
+      storeWS.connect(setQuery(url.value, wsTest.token),
+       (message: any) => {
         console.log('message', message)
       })
     }
@@ -74,7 +80,7 @@ watch(
 .open {
   background-color: rgb(36, 133, 31);
 }
-.container{
+.container {
   display: flex;
 }
 </style>

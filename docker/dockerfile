@@ -1,0 +1,15 @@
+FROM quay.io/keycloak/keycloak:25.0
+USER root
+COPY  ./init.d/ /opt/keycloak/bin
+
+# choose one
+# windows
+RUN apt-get -y update; apt-get -y install curl
+RUN sed -i -e 's/\r$//' /opt/keycloak/bin/init.sh 
+RUN sed -i -e 's/\r$//' /opt/keycloak/bin/client.sh
+# linux
+# RUN chmod 777 /opt/keycloak/bin/clients/client_master.json
+# RUN chmod 777 /opt/keycloak/bin/users/user_master_admin.json
+#
+ENTRYPOINT [ "/opt/keycloak/bin/init.sh", "start" ]
+# ENTRYPOINT ["tail", "-f", "/dev/null"]

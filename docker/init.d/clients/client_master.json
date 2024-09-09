@@ -1,0 +1,21 @@
+{
+    "protocol": "openid-connect",
+    "id": "clientID",
+    "clientId": "kcClientID",
+    "name": "kcClientID",
+    "description": "",
+    "publicClient": false,
+    "authorizationServicesEnabled": true,
+    "serviceAccountsEnabled": true,
+    "implicitFlowEnabled": false,
+    "directAccessGrantsEnabled": true,
+    "standardFlowEnabled": true,
+    "frontchannelLogout": true,
+    "alwaysDisplayInConsole": false,
+    "clientAuthenticatorType": "client-secret",
+    "secret": "kcClientSecret",
+    "attributes": {
+        "oauth2.device.authorization.grant.enabled": false,
+        "oidc.ciba.grant.enabled": false
+    }
+}

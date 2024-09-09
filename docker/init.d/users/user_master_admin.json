@@ -1,0 +1,9 @@
+{
+    "username": "admin",
+    "email": "bot@test.com",
+    "firstName": "",
+    "lastName": "",
+    "enabled": true,
+    "emailVerified": true,
+    "requiredActions": []
+}
