@@ -1,0 +1,11 @@
+// Override Bootstrap variables for light theme
+$body-bg: #ffffff;
+$body-color: #000000;
+$primary: #007bff;
+$success: #28a745;
+$danger: #dc3545;
+$warning: #dc35d1;
+$accent: #dc5935;
+
+// Import Bootstrap after variable overrides
+@import 'bootstrap/scss/bootstrap';

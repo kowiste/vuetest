@@ -1,0 +1,12 @@
+body.dark-theme {
+  // Override Bootstrap variables for light theme
+  $body-bg: #302f2f;
+  $body-color: #dbdbdb;
+  $primary: #578fc9;
+  $success: #7ea888;
+  $danger: #9c797c;
+  $warning: #ff00d0;
+
+  // Import Bootstrap after variable overrides
+  @import 'bootstrap/scss/bootstrap';
+}
